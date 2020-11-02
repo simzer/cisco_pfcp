@@ -22,7 +22,7 @@
 #include <epan/addr_resolv.h> /* Needed for BASE_ENTERPRISES */
 #include <epan/dissectors/packet-e164.h>
 #include <epan/dissectors/packet-e212.h>
-#include "packet-ntp.h"
+#include <epan/dissectors/packet-ntp.h>
 
 void proto_register_pfcp(void);
 void proto_reg_handoff_pfcp(void);
@@ -1548,7 +1548,7 @@ pfcp_track_session(tvbuff_t * tvb, packet_info * pinfo, proto_tree * tree, pfcp_
         session = (guint32*)g_hash_table_lookup(pfcp_session_table, &pinfo->num);
         if (session) {
             it = proto_tree_add_uint(tree, hf_pfcp_session, tvb, 0, 0, *session);
-            proto_item_set_generated(it);
+            PROTO_ITEM_SET_GENERATED(it);
         }
     }
 
@@ -1978,14 +1978,14 @@ dissect_pfcp_application_id(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *t
     /* Octet 5 to (n+4) Application Identifier
     * The Application Identifier shall be encoded as an OctetString (see 3GPP TS 29.212)
     */
-    if (tvb_ascii_isprint(tvb, offset, length))
+/*    if (tvb_ascii_isprint(tvb, offset, length))
     {
         const guint8* string_value;
         proto_tree_add_item_ret_string(tree, hf_pfcp_application_id_str, tvb, offset, length, ENC_ASCII | ENC_NA, wmem_packet_scope(), &string_value);
         proto_item_append_text(item, "%s", string_value);
     }
     else
-    {
+  */  {
         proto_tree_add_item(tree, hf_pfcp_application_id, tvb, offset, length, ENC_NA);
     }
 }
@@ -2228,7 +2228,7 @@ dissect_pfcp_monitoring_time(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree
     * Octets 5 to 8 shall be encoded in the same format as the first four octets
     * of the 64-bit timestamp format as defined in section 6 of IETF RFC 5905.
     */
-    time_str = tvb_ntp_fmt_ts_sec(tvb, 0);
+    time_str = "";//tvb_ntp_fmt_ts_sec(tvb, 0);
     proto_tree_add_string(tree, hf_pfcp_monitoring_time, tvb, offset, 4, time_str);
     proto_item_append_text(item, "%s", time_str);
     offset += 4;
@@ -3448,7 +3448,7 @@ dissect_pfcp_time_of_first_packet(tvbuff_t *tvb, packet_info *pinfo, proto_tree 
      * format as defined in section 6 of IETF RFC 5905
      */
 
-    time_str = tvb_ntp_fmt_ts_sec(tvb, 0);
+    time_str = "";//tvb_ntp_fmt_ts_sec(tvb, 0);
     proto_tree_add_string(tree, hf_pfcp_time_of_first_packet, tvb, offset, 4, time_str);
     proto_item_append_text(item, "%s", time_str);
     offset += 4;
@@ -3470,7 +3470,7 @@ dissect_pfcp_time_of_last_packet(tvbuff_t *tvb, packet_info *pinfo, proto_tree *
     * format as defined in section 6 of IETF RFC 5905
     */
 
-    time_str = tvb_ntp_fmt_ts_sec(tvb, 0);
+    time_str = "";//tvb_ntp_fmt_ts_sec(tvb, 0);
     proto_tree_add_string(tree, hf_pfcp_time_of_last_packet, tvb, offset, 4, time_str);
     proto_item_append_text(item, "%s", time_str);
     offset += 4;
@@ -3623,7 +3623,7 @@ dissect_pfcp_start_time(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, pro
     /* The Start Time field shall contain a UTC time. Octets 5 to 8 are encoded in the same format as
     * the first four octets of the 64-bit timestamp format as defined in section 6 of IETF RFC 5905 [26].
     */
-    time_str = tvb_ntp_fmt_ts_sec(tvb, 0);
+    time_str = "";//tvb_ntp_fmt_ts_sec(tvb, 0);
     proto_tree_add_string(tree, hf_pfcp_start_time, tvb, offset, 4, time_str);
     proto_item_append_text(item, "%s", time_str);
     offset += 4;
@@ -3645,7 +3645,7 @@ dissect_pfcp_end_time(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, proto
     /* The End Time field shall contain a UTC time. Octets 5 to 8 are encoded in the same format as
     * the first four octets of the 64-bit timestamp format as defined in section 6 of IETF RFC 5905 [26].
     */
-    time_str = tvb_ntp_fmt_ts_sec(tvb, 0);
+    time_str = "";//tvb_ntp_fmt_ts_sec(tvb, 0);
     proto_tree_add_string(tree, hf_pfcp_end_time, tvb, offset, 4, time_str);
     proto_item_append_text(item, "%s", time_str);
     offset += 4;
@@ -3879,14 +3879,14 @@ dissect_pfcp_application_instance_id(tvbuff_t *tvb, packet_info *pinfo _U_, prot
 
     /* Octet 5 5 to (n+4)   Application Instance Identifier
      * The Application Instance Identifier shall be encoded as an OctetString (see 3GPP TS 29.212)
-     */
+     *//*
     if (tvb_ascii_isprint(tvb, offset, length))
     {
         const guint8* string_value;
         proto_tree_add_item_ret_string(tree, hf_pfcp_application_instance_id_str, tvb, offset, length, ENC_ASCII | ENC_NA, wmem_packet_scope(), &string_value);
         proto_item_append_text(item, "%s", string_value);
     }
-    else
+    else*/
     {
         proto_tree_add_item(tree, hf_pfcp_application_instance_id, tvb, offset, length, ENC_NA);
     }
@@ -4078,7 +4078,7 @@ dissect_pfcp_recovery_time_stamp(tvbuff_t *tvb, packet_info *pinfo, proto_tree *
     /* indicates the UTC time when the node started. Octets 5 to 8 are encoded in the same format as
     * the first four octets of the 64-bit timestamp format as defined in section 6 of IETF RFC 5905 [26].
     */
-    time_str = tvb_ntp_fmt_ts_sec(tvb, 0);
+    time_str = "";//tvb_ntp_fmt_ts_sec(tvb, 0);
     proto_tree_add_string(tree, hf_pfcp_recovery_time_stamp, tvb, offset, 4, time_str);
     proto_item_append_text(item, "%s", time_str);
     offset += 4;
@@ -4166,10 +4166,10 @@ dissect_pfcp_header_enrichment(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree
 
     /* 7 to m Header Field Name
      * Header Field Name shall be encoded as an OctetString
-     */
+     *//*
     if (tvb_ascii_isprint(tvb, offset, len))
         proto_tree_add_item(tree, hf_pfcp_hf_name_str, tvb, offset, len, ENC_ASCII | ENC_NA);
-    else
+    else*/
         proto_tree_add_item(tree, hf_pfcp_hf_name, tvb, offset, len, ENC_NA);
     offset+= len;
 
@@ -4178,9 +4178,9 @@ dissect_pfcp_header_enrichment(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree
     offset++;
 
     /* (p+1) to q   Header Field Value */
-    if (tvb_ascii_isprint(tvb, offset, len))
+/*    if (tvb_ascii_isprint(tvb, offset, len))
         proto_tree_add_item(tree, hf_pfcp_hf_val_str, tvb, offset, len, ENC_ASCII | ENC_NA);
-    else
+    else*/
         proto_tree_add_item(tree, hf_pfcp_hf_val, tvb, offset, len, ENC_NA);
     offset += len;
 
@@ -5475,7 +5475,7 @@ dissect_pfcp_event_time_stamp(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
     * Octets 5 to 8 shall be encoded in the same format as the first four octets
     * of the 64-bit timestamp format as defined in section 6 of IETF RFC 5905.
     */
-    time_str = tvb_ntp_fmt_ts_sec(tvb, 0);
+    time_str = "";//tvb_ntp_fmt_ts_sec(tvb, 0);
     proto_tree_add_string(tree, hf_pfcp_event_time_stamp, tvb, offset, 4, time_str);
     proto_item_append_text(item, "%s", time_str);
     offset += 4;
@@ -5904,15 +5904,15 @@ pfcp_match_response(tvbuff_t * tvb, packet_info * pinfo, proto_tree * tree, gint
 
         if (pcrp->is_request) {
             it = proto_tree_add_uint(tree, hf_pfcp_response_in, tvb, 0, 0, pcrp->rep_frame);
-            proto_item_set_generated(it);
+            PROTO_ITEM_SET_GENERATED(it);
         } else {
             nstime_t ns;
 
             it = proto_tree_add_uint(tree, hf_pfcp_response_to, tvb, 0, 0, pcrp->req_frame);
-            proto_item_set_generated(it);
+            PROTO_ITEM_SET_GENERATED(it);
             nstime_delta(&ns, &pinfo->abs_ts, &pcrp->req_time);
             it = proto_tree_add_time(tree, hf_pfcp_response_time, tvb, 0, 0, &ns);
-            proto_item_set_generated(it);
+            PROTO_ITEM_SET_GENERATED(it);
             if (g_pfcp_session && !PINFO_FD_VISITED(pinfo)) {
                 /* PFCP session */
                 /* If it's not already in the list */
@@ -7426,7 +7426,7 @@ dissect_pfcp(tvbuff_t * tvb, packet_info * pinfo, proto_tree * tree, void *data 
     if ((pfcp_flags & 0x1) == 1) {
         /* If S flag is set to 1, then SEID shall be placed into octets 5-12*/
         /* Session Endpoint Identifier 8 Octets */
-        pfcp_hdr->seid = tvb_get_ntohi64(tvb, offset);
+        pfcp_hdr->seid = tvb_get_ntoh64(tvb, offset);
         proto_tree_add_uint64(sub_tree, hf_pfcp_seid, tvb, offset, 8, pfcp_hdr->seid);
         offset += 8;
     }
